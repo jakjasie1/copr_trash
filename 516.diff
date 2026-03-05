@@ -1,0 +1,276 @@
+diff --git a/src/Gui/ExportMenu.cpp b/src/Gui/ExportMenu.cpp
+index cf8a98a6c4d805892565693dad238fd051116e6b..a1a361315434067f2573b5f23de74bc6a40bc9ab 100644
+--- a/src/Gui/ExportMenu.cpp
++++ b/src/Gui/ExportMenu.cpp
+@@ -33,7 +33,7 @@
+ using namespace std::chrono_literals;
+ using namespace Qt::StringLiterals;
+ 
+-static std::unique_ptr<ExportMenu> s_instance = nullptr;
++static ExportMenu *s_instance = nullptr;
+ 
+ ExportMenu::ExportMenu(QWidget *parent)
+     : SpectacleMenu(parent)
+@@ -60,16 +60,25 @@ ExportMenu::ExportMenu(QWidget *parent)
+     getKServiceItems();
+ }
+ 
++ExportMenu::~ExportMenu()
++{
++    s_instance = nullptr;
++}
++
+ ExportMenu *ExportMenu::instance()
+ {
+     if (!s_instance && SpectacleCore::instance()) {
+-        s_instance = std::unique_ptr<ExportMenu>(new ExportMenu);
+-        // We have to destroy this after SpectacleCore to prevent a crash from the Qt Quick UI.
+-        connect(SpectacleCore::instance(), &QObject::destroyed, s_instance.get(), [] {
+-            s_instance.reset();
++        s_instance = new ExportMenu;
++        // We have to destroy this after SpectacleCore to ensure that destructors
++        // are called. We don't just rely on smart pointers because they won't delete
++        // the menus at the right time and cause a crash while quitting.
++        connect(SpectacleCore::instance(), &QObject::destroyed, qApp, [] {
++            if (s_instance) {
++                delete s_instance;
++            }
+         });
+     }
+-    return s_instance.get();
++    return s_instance;
+ }
+ 
+ void ExportMenu::onImageChanged()
+diff --git a/src/Gui/ExportMenu.h b/src/Gui/ExportMenu.h
+index 192b9d315e063aca1603979cb666c3f9cb922d82..688abad762799031c49dbe4281953b49a9f6e911 100644
+--- a/src/Gui/ExportMenu.h
++++ b/src/Gui/ExportMenu.h
+@@ -47,6 +47,7 @@ Q_SIGNALS:
+ 
+ private:
+     explicit ExportMenu(QWidget *parent = nullptr);
++    ~ExportMenu();
+ 
+     Q_SLOT void onImageChanged();
+     Q_SLOT void openScreenshotsFolder();
+diff --git a/src/Gui/HelpMenu.cpp b/src/Gui/HelpMenu.cpp
+index e78a65c461951d2ae08b9695ef29677cda98fef6..9cd2d80501528c7ddbb9144b126a0f6d35fb79c3 100644
+--- a/src/Gui/HelpMenu.cpp
++++ b/src/Gui/HelpMenu.cpp
+@@ -17,7 +17,7 @@
+ 
+ using namespace Qt::StringLiterals;
+ 
+-static std::unique_ptr<HelpMenu> s_instance = nullptr;
++static HelpMenu *s_instance = nullptr;
+ 
+ static QObject *findWidgetOfType(const char *className)
+ {
+@@ -43,16 +43,25 @@ HelpMenu::HelpMenu(QWidget* parent)
+     connect(this, &QMenu::triggered, this, &HelpMenu::onTriggered);
+ }
+ 
++HelpMenu::~HelpMenu()
++{
++    s_instance = nullptr;
++}
++
+ HelpMenu *HelpMenu::instance()
+ {
+     if (!s_instance && SpectacleCore::instance()) {
+-        s_instance = std::unique_ptr<HelpMenu>(new HelpMenu);
+-        // We have to destroy this after SpectacleCore to prevent a crash from the Qt Quick UI.
+-        connect(SpectacleCore::instance(), &QObject::destroyed, s_instance.get(), [] {
+-            s_instance.reset();
++        s_instance = new HelpMenu;
++        // We have to destroy this after SpectacleCore to ensure that destructors
++        // are called. We don't just rely on smart pointers because they won't delete
++        // the menus at the right time and cause a crash while quitting.
++        connect(SpectacleCore::instance(), &QObject::destroyed, qApp, [] {
++            if (s_instance) {
++                delete s_instance;
++            }
+         });
+     }
+-    return s_instance.get();
++    return s_instance;
+ }
+ 
+ void HelpMenu::showAppHelp()
+diff --git a/src/Gui/HelpMenu.h b/src/Gui/HelpMenu.h
+index 475ca8a644d3fb966dc6af2fb4f5e2d3f5c518ae..81d760379debde7c80a676b9ebc9c9693e285f93 100644
+--- a/src/Gui/HelpMenu.h
++++ b/src/Gui/HelpMenu.h
+@@ -34,6 +34,7 @@ public:
+ 
+ private:
+     explicit HelpMenu(QWidget *parent = nullptr);
++    ~HelpMenu();
+     Q_SLOT void onTriggered(QAction *action);
+     const std::unique_ptr<KHelpMenu> kHelpMenu;
+     friend class HelpMenuSingleton;
+diff --git a/src/Gui/OptionsMenu.cpp b/src/Gui/OptionsMenu.cpp
+index 8a70f20ad0904e9222e6ba5dbd73e11cb45c68ec..25fa1096a28514f3260deb0c9649bd51e0e8ff8c 100644
+--- a/src/Gui/OptionsMenu.cpp
++++ b/src/Gui/OptionsMenu.cpp
+@@ -23,7 +23,7 @@
+ 
+ using namespace Qt::StringLiterals;
+ 
+-static std::unique_ptr<OptionsMenu> s_instance = nullptr;
++static OptionsMenu *s_instance = nullptr;
+ 
+ OptionsMenu::OptionsMenu(QWidget *parent)
+     : SpectacleMenu(parent)
+@@ -152,16 +152,25 @@ OptionsMenu::OptionsMenu(QWidget *parent)
+             });
+ }
+ 
++OptionsMenu::~OptionsMenu()
++{
++    s_instance = nullptr;
++}
++
+ OptionsMenu *OptionsMenu::instance()
+ {
+     if (!s_instance && SpectacleCore::instance()) {
+-        s_instance = std::unique_ptr<OptionsMenu>(new OptionsMenu);
+-        // We have to destroy this after SpectacleCore to prevent a crash from the Qt Quick UI.
+-        connect(SpectacleCore::instance(), &QObject::destroyed, s_instance.get(), [] {
+-            s_instance.reset();
++        s_instance = new OptionsMenu;
++        // We have to destroy this after SpectacleCore to ensure that destructors
++        // are called. We don't just rely on smart pointers because they won't delete
++        // the menus at the right time and cause a crash while quitting.
++        connect(SpectacleCore::instance(), &QObject::destroyed, qApp, [] {
++            if (s_instance) {
++                delete s_instance;
++            }
+         });
+     }
+-    return s_instance.get();
++    return s_instance;
+ }
+ 
+ void OptionsMenu::showPreferencesDialog()
+diff --git a/src/Gui/OptionsMenu.h b/src/Gui/OptionsMenu.h
+index b600f3f4c76826ccfaac959b61acf5b869997cf1..a000186a08fca3b3080d127a922ff8a640798a9c 100644
+--- a/src/Gui/OptionsMenu.h
++++ b/src/Gui/OptionsMenu.h
+@@ -42,6 +42,7 @@ protected:
+     void mouseReleaseEvent(QMouseEvent *event) override;
+ 
+     explicit OptionsMenu(QWidget *parent = nullptr);
++    ~OptionsMenu();
+ 
+     void delayActionLayoutUpdate();
+     const std::unique_ptr<QWidgetAction> m_delayAction;
+diff --git a/src/Gui/RecordingModeMenu.cpp b/src/Gui/RecordingModeMenu.cpp
+index 425f28d9e302958c02bd514e13f5101229e72f9a..981f9c9b60a9fffc0ad39e420e113a51fd7feb17 100644
+--- a/src/Gui/RecordingModeMenu.cpp
++++ b/src/Gui/RecordingModeMenu.cpp
+@@ -10,7 +10,7 @@
+ 
+ using namespace Qt::StringLiterals;
+ 
+-static std::unique_ptr<RecordingModeMenu> s_instance = nullptr;
++static RecordingModeMenu *s_instance = nullptr;
+ 
+ RecordingModeMenu::RecordingModeMenu(QWidget *parent)
+     : SpectacleMenu(i18nc("@title:menu", "Recording Modes"), parent)
+@@ -54,16 +54,25 @@ RecordingModeMenu::RecordingModeMenu(QWidget *parent)
+     connect(RecordingModeModel::instance(), &RecordingModeModel::recordingModesChanged, this, addModes);
+ }
+ 
++RecordingModeMenu::~RecordingModeMenu()
++{
++    s_instance = nullptr;
++}
++
+ RecordingModeMenu *RecordingModeMenu::instance()
+ {
+     if (!s_instance && SpectacleCore::instance()) {
+-        s_instance = std::unique_ptr<RecordingModeMenu>(new RecordingModeMenu);
+-        // We have to destroy this after SpectacleCore to prevent a crash from the Qt Quick UI.
+-        connect(SpectacleCore::instance(), &QObject::destroyed, s_instance.get(), [] {
+-            s_instance.reset();
++        s_instance = new RecordingModeMenu;
++        // We have to destroy this after SpectacleCore to ensure that destructors
++        // are called. We don't just rely on smart pointers because they won't delete
++        // the menus at the right time and cause a crash while quitting.
++        connect(SpectacleCore::instance(), &QObject::destroyed, qApp, [] {
++            if (s_instance) {
++                delete s_instance;
++            }
+         });
+     }
+-    return s_instance.get();
++    return s_instance;
+ }
+ 
+ #include "moc_RecordingModeMenu.cpp"
+diff --git a/src/Gui/RecordingModeMenu.h b/src/Gui/RecordingModeMenu.h
+index fe8f0a7123a17887af57d45dabe1abaec81b4137..c45ca3c80ade00e6a2c5a340943da3e0f216be3b 100644
+--- a/src/Gui/RecordingModeMenu.h
++++ b/src/Gui/RecordingModeMenu.h
+@@ -27,4 +27,5 @@ public:
+ 
+ private:
+     explicit RecordingModeMenu(QWidget *parent = nullptr);
++    ~RecordingModeMenu();
+ };
+diff --git a/src/Gui/ScreenshotModeMenu.cpp b/src/Gui/ScreenshotModeMenu.cpp
+index c557c21692c91f9b4072736ae845763747444c3c..b27900f029dc756d797c040598a2c4004c60ca37 100644
+--- a/src/Gui/ScreenshotModeMenu.cpp
++++ b/src/Gui/ScreenshotModeMenu.cpp
+@@ -10,7 +10,7 @@
+ 
+ using namespace Qt::StringLiterals;
+ 
+-static std::unique_ptr<ScreenshotModeMenu> s_instance = nullptr;
++static ScreenshotModeMenu *s_instance = nullptr;
+ 
+ ScreenshotModeMenu::ScreenshotModeMenu(QWidget *parent)
+     : SpectacleMenu(i18nc("@title:menu", "Screenshot Modes"), parent)
+@@ -63,16 +63,25 @@ ScreenshotModeMenu::ScreenshotModeMenu(QWidget *parent)
+     connect(CaptureModeModel::instance(), &CaptureModeModel::captureModesChanged, this, addModes);
+ }
+ 
++ScreenshotModeMenu::~ScreenshotModeMenu()
++{
++    s_instance = nullptr;
++}
++
+ ScreenshotModeMenu *ScreenshotModeMenu::instance()
+ {
+     if (!s_instance && SpectacleCore::instance()) {
+-        s_instance = std::unique_ptr<ScreenshotModeMenu>(new ScreenshotModeMenu);
+-        // We have to destroy this after SpectacleCore to prevent a crash from the Qt Quick UI.
+-        connect(SpectacleCore::instance(), &QObject::destroyed, s_instance.get(), [] {
+-            s_instance.reset();
++        s_instance = new ScreenshotModeMenu;
++        // We have to destroy this after SpectacleCore to ensure that destructors
++        // are called. We don't just rely on smart pointers because they won't delete
++        // the menus at the right time and cause a crash while quitting.
++        connect(SpectacleCore::instance(), &QObject::destroyed, qApp, [] {
++            if (s_instance) {
++                delete s_instance;
++            }
+         });
+     }
+-    return s_instance.get();
++    return s_instance;
+ }
+ 
+ #include "moc_ScreenshotModeMenu.cpp"
+diff --git a/src/Gui/ScreenshotModeMenu.h b/src/Gui/ScreenshotModeMenu.h
+index 387a05db03c60e042c09c998d5c16738899ff879..9ce75fa5019b4be42b4679560af613ea94eae0a2 100644
+--- a/src/Gui/ScreenshotModeMenu.h
++++ b/src/Gui/ScreenshotModeMenu.h
+@@ -27,4 +27,5 @@ public:
+ 
+ private:
+     explicit ScreenshotModeMenu(QWidget *parent = nullptr);
++    ~ScreenshotModeMenu();
+ };
