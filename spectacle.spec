@@ -10,7 +10,7 @@ Name:    spectacle
 Summary: Screenshot capture utility
 Epoch:   1
 Version: 6.6.1
-Release: 1%{?dist}
+Release: 2%{?dist}
 
 # Automatically converted from old format: GPLv2 - review is highly recommended.
 License: GPL-2.0-only
@@ -31,7 +31,8 @@ Source1: https://download.kde.org/%{stable}/plasma/%{maj_ver_kf6}.%{min_ver_kf6}
 ## downstream patches
 ### Local workaround while waiting for a better fix
 ### Cf. https://bugs.kde.org/show_bug.cgi?id=516162
-Patch1001: spectacle-6.6.0-tesseract-fedora-centos-libs.patch
+#Patch1001: spectacle-6.6.0-tesseract-fedora-centos-libs.patch
+Patch1001: https://raw.githubusercontent.com/jakjasie1/copr_trash/refs/heads/main/516.diff
 
 %global majmin %(echo %{version} | cut -d. -f1,2)
 
