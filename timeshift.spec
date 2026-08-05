@@ -1,5 +1,5 @@
 Name:           timeshift
-Version:       25.12.4
+Version:       25.12.4^btrfs.pr480
 Release:        1%{?dist}
 Summary:        System restore tool for Linux
 License:        GPL-2.0-or-later
