@@ -5,7 +5,7 @@ Summary:        System restore tool for Linux
 License:        GPL-2.0-or-later
 URL:            https://github.com/linuxmint/timeshift
 Source0:        https://github.com/linuxmint/timeshift/archive/refs/tags/%{version}.tar.gz
-
+Source1:       https://github.com/linuxmint/timeshift/pull/480.patch
 BuildRequires:  help2man
 BuildRequires:  meson
 BuildRequires:  pkgconfig
