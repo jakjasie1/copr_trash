@@ -5,7 +5,7 @@ Summary:        Compatibility layer and high level emulator hybrid for running m
 
 License:        GPL-3.0-only
 URL:           https://github.com/microlift/rosemary
-Source0:        %{url}/archive/refs/tags/v%{version}.tar.gz
+Source0:        %{url}/archive/refs/tags/%{version}.tar.gz
 
 BuildRequires:  SDL3-devel
 BuildRequires:  cargo
@@ -20,7 +20,7 @@ Requires:       curl
 %{summary}.
 
 %prep
-%autosetup -n v%{version}
+%autosetup -n %{name}-%{version}
 %cargo_prep
 
 %generate_buildrequires
