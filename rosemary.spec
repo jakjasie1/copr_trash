@@ -20,7 +20,7 @@ Requires:       curl
 %{summary}.
 
 %prep
-%autosetup -n v%{ver}
+%autosetup -n v%{version}
 %cargo_prep
 
 %generate_buildrequires
