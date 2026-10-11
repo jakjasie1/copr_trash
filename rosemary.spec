@@ -3,7 +3,7 @@ Version:        0.2.0
 Release:        1%{?dist}
 Summary:        Compatibility layer and high level emulator hybrid for running macOS applications across operating systems and architectures
 
-License:        
+License:        GPL-3.0-only
 URL:           https://github.com/microlift/rosemary
 Source0:        %{url}/archive/refs/tags/v%{version}.tar.gz
 
