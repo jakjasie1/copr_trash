@@ -1,3 +1,5 @@
+%define app_id io.github.microlift.butter
+
 Name:           butter
 Version:        1.1.0
 Release:        1%{?dist}
@@ -26,10 +28,20 @@ BuildRequires:  cargo-rpm-macros
 
 %install
 %cargo_install
+	install -Dm644 data/%{app_id}.desktop %{_datadir}/applications/%{app_id}.desktop
+	install -Dm644 data/%{app_id}.metainfo.xml %{_datadir}/metainfo/%{app_id}.metainfo.xml
+	install -Dm644 data/icons/hicolor/scalable/apps/%{app_id}.svg \
+		%{_datadir}/icons/hicolor/scalable/apps/%{app_id}.svg
+	install -Dm644 data/icons/hicolor/symbolic/apps/%{app_id}-symbolic.svg \
+		%{_datadir}/icons/hicolor/symbolic/apps/%{app_id}-symbolic.svg
 
 %files
 %{_bindir}/%{name}
-
+%{_datadir}/applications/%{app_id}.desktop
+%{_datadir}/metainfo/%{app_id}.metainfo.xml
+%{_datadir}/icons/hicolor/scalable/apps/%{app_id}.svg
+%{_datadir}/icons/hicolor/symbolic/apps/%{app_id}-symbolic.svg
+  
 %changelog
 * Wed Oct 14 2026 jakjasie1
 - Initial package.
