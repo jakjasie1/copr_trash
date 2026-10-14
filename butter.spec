@@ -27,6 +27,8 @@ BuildRequires:  cargo-rpm-macros
 %install
 %cargo_install
 
+%files
+%{_bindir}/%{name}
 
 %changelog
 * Wed Oct 14 2026 jakjasie1
